@@ -1,0 +1,21 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build
+target/
+.cpcache/
+.clj-kondo/
+.cljs_nashorn_repl/
+
+# Runtime
+.nrepl-port
+.#*
+node_modules/
+
+# Test coverage
+coverage/

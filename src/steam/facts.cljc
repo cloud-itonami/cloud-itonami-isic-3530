@@ -60,7 +60,40 @@
      :thermal-meter-inspection {:description "Heat meter certification and fit-to-purpose"
                                :required false
                                :spec-basis "Heat Networks (Metering) Regulations"
-                               :evidence [:thermal-meter-cert]}}}})
+                               :evidence [:thermal-meter-cert]}}}
+
+   ;; France's réseaux de chaleur/froid regime is genuinely differently-shaped
+   ;; from JPN/USA/GBR's customer-facing metering/disclosure rules -- it
+   ;; regulates mandatory CONNECTION to classified networks, not per-customer
+   ;; metering or disclosure. WebFetch-verified 2026-07-21 directly against
+   ;; legifrance.gouv.fr (France's official law portal): Code de l'énergie
+   ;; Book VII Title I Chapter II (articles L712-1 to L712-5).
+   :FRA
+   {:name "France"
+    :requirements
+    {:mandatory-connection {:description "Any new-building or major-renovation installation exceeding 30kW inside a network's priority development zone must connect to that classified réseau de chaleur/froid (buildings <=30kW or outside a zone are not covered by this obligation)"
+                           :required true
+                           :spec-basis "Code de l'énergie art. L712-2 (priority development zones) + L712-3 (mandatory connection obligation, exemptions possible by local decision)"
+                           :evidence [:building-power-rating :priority-zone-status]}
+     :network-classification-disclosure {:description "A network >50% powered by renewable/recovered energy seeking classified status must undergo an energy audit and financial-viability assessment"
+                                        :required true
+                                        :spec-basis "Code de l'énergie art. L712-1"
+                                        :evidence [:energy-audit-record :financial-viability-assessment]}}
+    :suspension-requirements
+    ;; NOT verified this iteration: no French-law citation for a network
+    ;; OPERATOR's :payment-delinquency/:safety-violation/:customer-request
+    ;; supply-suspension power (the JPN/USA/GBR shape) was found -- so those
+    ;; specific reason-keys are honestly absent for :FRA, and
+    ;; `suspension-allowed-for?` correctly returns false for them rather than
+    ;; a fabricated true. The one entry below IS real and verified, but is a
+    ;; different kind of fact: a penalty on the BUILDING OWNER for failing to
+    ;; connect (L712-5), not a suspension power the operator wields against an
+    ;; already-connected customer. Kept under its own honestly-named reason-key
+    ;; rather than folded into :payment-delinquency, to avoid implying an
+    ;; equivalence that isn't there.
+    {:non-compliance-with-connection-obligation
+     {:allowed true
+      :spec-basis "Code de l'énergie art. L712-5 (300,000 EUR fine for violating the L712-3 mandatory connection obligation -- an enforcement penalty against the OBLIGATED BUILDING OWNER, not a supply-suspension power the network operator exercises against a customer, unlike the other jurisdictions' :payment-delinquency/:safety-violation entries)"}}}})
 
 ;; ----------------------------- coverage reporting (honest) -----------------------------
 

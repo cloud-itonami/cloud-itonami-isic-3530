@@ -7,7 +7,21 @@
   (is (seq facts/catalog) "Catalog should not be empty")
   (is (contains? facts/catalog :JPN) "Should have Japan jurisdiction")
   (is (contains? facts/catalog :USA) "Should have USA jurisdiction")
-  (is (contains? facts/catalog :GBR) "Should have UK jurisdiction"))
+  (is (contains? facts/catalog :GBR) "Should have UK jurisdiction")
+  (is (contains? facts/catalog :FRA) "Should have France jurisdiction"))
+
+(deftest france-requirements
+  "Verify France's district-heating requirements -- a genuinely differently-
+  shaped regime (mandatory connection to classified networks) from JPN/USA/GBR's
+  customer-facing metering/disclosure rules."
+  (let [fra-reqs (facts/requirement-citations :FRA)]
+    (is (contains? fra-reqs :mandatory-connection) "Should require mandatory connection")
+    (is (contains? fra-reqs :network-classification-disclosure) "Should require classification disclosure")
+    (is (every? :spec-basis (vals fra-reqs)) "Every requirement should have an official spec-basis citation"))
+  (is (facts/suspension-allowed-for? :FRA :non-compliance-with-connection-obligation)
+    "Should allow the L712-5 connection-obligation penalty")
+  (is (not (facts/suspension-allowed-for? :FRA :payment-delinquency))
+    "France has no verified operator-side payment-delinquency suspension power -- must not be fabricated as true"))
 
 (deftest japan-requirements
   "Verify Japan thermal supply requirements."

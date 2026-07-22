@@ -8,7 +8,28 @@
   (is (contains? facts/catalog :JPN) "Should have Japan jurisdiction")
   (is (contains? facts/catalog :USA) "Should have USA jurisdiction")
   (is (contains? facts/catalog :GBR) "Should have UK jurisdiction")
-  (is (contains? facts/catalog :FRA) "Should have France jurisdiction"))
+  (is (contains? facts/catalog :FRA) "Should have France jurisdiction")
+  (is (contains? facts/catalog :DEU) "Should have Germany jurisdiction"))
+
+(deftest germany-requirements
+  "Verify Germany's AVBFernwärmeV requirements -- a genuinely differently-shaped
+  regime from JPN/USA/GBR/FRA: a procedural/proportionality safeguard on
+  payment-delinquency disconnection (2-week notice-after-warning, waivable),
+  distinct from the flat :allowed-true shape used elsewhere."
+  (let [deu-reqs (facts/requirement-citations :DEU)]
+    (is (contains? deu-reqs :contract-formation-disclosure))
+    (is (contains? deu-reqs :billing-disclosure))
+    (is (every? :spec-basis (vals deu-reqs)) "Every requirement should have an official spec-basis citation"))
+  (is (facts/suspension-allowed-for? :DEU :safety-violation)
+    "Immediate suspension for safety reasons should be allowed under §33(1)")
+  (is (facts/suspension-allowed-for? :DEU :payment-delinquency)
+    "Payment-delinquency suspension should be allowed under §33(2)")
+  (is (= 14 (facts/notice-period-days-for :DEU :payment-delinquency))
+    "Germany requires a 14-day notice period after warning before payment-delinquency suspension")
+  (is (nil? (facts/notice-period-days-for :DEU :safety-violation))
+    "No notice-period safeguard applies to immediate safety suspensions")
+  (is (nil? (facts/notice-period-days-for :JPN :payment-delinquency))
+    "Japan's catalog entry does not model a notice-period safeguard -- must not be fabricated"))
 
 (deftest france-requirements
   "Verify France's district-heating requirements -- a genuinely differently-

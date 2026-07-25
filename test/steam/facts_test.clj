@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [steam.facts :as facts]))
 
-(deftest jurisdiction-coverage
-  "Verify jurisdiction catalog has expected structure."
+(deftest ^{:doc "Verify jurisdiction catalog has expected structure."} jurisdiction-coverage
   (is (seq facts/catalog) "Catalog should not be empty")
   (is (contains? facts/catalog :JPN) "Should have Japan jurisdiction")
   (is (contains? facts/catalog :USA) "Should have USA jurisdiction")
@@ -11,11 +10,10 @@
   (is (contains? facts/catalog :FRA) "Should have France jurisdiction")
   (is (contains? facts/catalog :DEU) "Should have Germany jurisdiction"))
 
-(deftest germany-requirements
-  "Verify Germany's AVBFernwärmeV requirements -- a genuinely differently-shaped
+(deftest ^{:doc "Verify Germany's AVBFernwärmeV requirements -- a genuinely differently-shaped
   regime from JPN/USA/GBR/FRA: a procedural/proportionality safeguard on
   payment-delinquency disconnection (2-week notice-after-warning, waivable),
-  distinct from the flat :allowed-true shape used elsewhere."
+  distinct from the flat :allowed-true shape used elsewhere."} germany-requirements
   (let [deu-reqs (facts/requirement-citations :DEU)]
     (is (contains? deu-reqs :contract-formation-disclosure))
     (is (contains? deu-reqs :billing-disclosure))
@@ -31,10 +29,9 @@
   (is (nil? (facts/notice-period-days-for :JPN :payment-delinquency))
     "Japan's catalog entry does not model a notice-period safeguard -- must not be fabricated"))
 
-(deftest france-requirements
-  "Verify France's district-heating requirements -- a genuinely differently-
+(deftest ^{:doc "Verify France's district-heating requirements -- a genuinely differently-
   shaped regime (mandatory connection to classified networks) from JPN/USA/GBR's
-  customer-facing metering/disclosure rules."
+  customer-facing metering/disclosure rules."} france-requirements
   (let [fra-reqs (facts/requirement-citations :FRA)]
     (is (contains? fra-reqs :mandatory-connection) "Should require mandatory connection")
     (is (contains? fra-reqs :network-classification-disclosure) "Should require classification disclosure")
@@ -44,15 +41,13 @@
   (is (not (facts/suspension-allowed-for? :FRA :payment-delinquency))
     "France has no verified operator-side payment-delinquency suspension power -- must not be fabricated as true"))
 
-(deftest japan-requirements
-  "Verify Japan thermal supply requirements."
+(deftest ^{:doc "Verify Japan thermal supply requirements."} japan-requirements
   (let [jpn-reqs (facts/requirement-citations :JPN)]
     (is (contains? jpn-reqs :customer-verification) "Should require customer verification")
     (is (contains? jpn-reqs :thermal-meter-inspection) "Should require thermal meter inspection")
     (is (contains? jpn-reqs :safety-information) "Should require safety information")))
 
-(deftest required-evidence
-  "Verify evidence satisfaction logic."
+(deftest ^{:doc "Verify evidence satisfaction logic."} required-evidence
   (is (facts/required-evidence-satisfied? :JPN
         {:customer-id-proof true :thermal-meter-cert true :heat-exchanger-cert true
          :address-proof true :contact-info true
@@ -62,8 +57,7 @@
              {:customer-id-proof true}))
     "Should reject incomplete evidence"))
 
-(deftest suspension-allowed
-  "Verify suspension reason validation."
+(deftest ^{:doc "Verify suspension reason validation."} suspension-allowed
   (is (facts/suspension-allowed-for? :JPN :payment-delinquency)
     "Should allow payment suspension in Japan")
   (is (facts/suspension-allowed-for? :JPN :safety-violation)
@@ -71,8 +65,7 @@
   (is (not (facts/suspension-allowed-for? :JPN :invalid-reason))
     "Should reject invalid suspension reason"))
 
-(deftest coverage-report
-  "Verify coverage reporting is honest."
+(deftest ^{:doc "Verify coverage reporting is honest."} coverage-report
   (let [cov (facts/coverage)]
     (is (contains? cov :implemented) "Should report implemented count")
     (is (contains? cov :worldwide-jurisdictions) "Should report worldwide jurisdictions")

@@ -141,15 +141,37 @@
 
 ;; ----------------------------- helpers -----------------------------
 
+(defn normalize-jurisdiction
+  "Resolve a jurisdiction value to the KEYWORD form `catalog` is keyed by.
+
+  Subject records in this actor carry `:jurisdiction` as a STRING (a customer
+  is stored with `:jurisdiction \"JPN\"`, and the operation API is called the
+  same way) while `catalog` is keyed by keyword (`:JPN`). Until 2026-07-25
+  nothing bridged the two, so every catalog lookup for a real subject missed:
+  `(get-in catalog [\"JPN\" :requirements])` is nil, and since
+  `(every? f nil)` is true, the Governor's `:evidence-incomplete` gate --
+  the one catalog lookup the Governor is actually wired to -- passed for
+  EVERY subject regardless of its checklist. The gate was dead code, and the
+  existing tests were green because of it, not in spite of it.
+
+  Returns nil for anything that is neither a keyword nor a string, so an
+  unusable jurisdiction value fails closed rather than resolving to some
+  default entry."
+  [jurisdiction]
+  (cond
+    (keyword? jurisdiction) jurisdiction
+    (string? jurisdiction) (keyword jurisdiction)
+    :else nil))
+
 (defn requirement-citations
   "Get all official citations for a jurisdiction's requirements."
   [jurisdiction]
-  (get-in catalog [jurisdiction :requirements]))
+  (get-in catalog [(normalize-jurisdiction jurisdiction) :requirements]))
 
 (defn suspension-allowed-for?
   "Check if suspension is allowed for a given reason in this jurisdiction."
   [jurisdiction reason]
-  (get-in catalog [jurisdiction :suspension-requirements reason :allowed] false))
+  (get-in catalog [(normalize-jurisdiction jurisdiction) :suspension-requirements reason :allowed] false))
 
 (defn notice-period-days-for
   "Get the required notice-period (in days) before suspension is allowed for
@@ -161,12 +183,20 @@
                    :notice-and-proportionality-safeguard :notice-period-days]))
 
 (defn required-evidence-satisfied?
-  "Check if a checklist satisfies this jurisdiction's evidence requirements."
+  "Check if a checklist satisfies this jurisdiction's evidence requirements.
+
+  Returns FALSE for a jurisdiction that is not in `catalog`. Before
+  2026-07-25 an unknown jurisdiction made `get-in` return nil, and
+  `(every? f nil)` is true, so the check passed VACUOUSLY -- a subject
+  carrying a jurisdiction this catalog does not know cleared the
+  Governor's `:evidence-incomplete` gate with an empty checklist. Failing
+  closed is the safe direction."
   [jurisdiction checklist]
-  (let [reqs (get-in catalog [jurisdiction :requirements])]
-    (every? (fn [[req-key req-spec]]
+  (if-let [reqs (get-in catalog [(normalize-jurisdiction jurisdiction) :requirements])]
+    (every? (fn [[_req-key req-spec]]
               (if (:required req-spec)
                 (let [evidence-keys (set (:evidence req-spec))]
                   (every? #(contains? checklist %) evidence-keys))
                 true))
-            reqs)))
+            reqs)
+    false))

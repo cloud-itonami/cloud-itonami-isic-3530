@@ -5,7 +5,13 @@
  ;; For standalone forks, use git coordinates to com-junkawasaki/langgraph-clj.
  :deps {io.github.com-junkawasaki/langgraph-clj
         {:git/url "https://github.com/com-junkawasaki/langgraph-clj.git"
-         :git/sha "a332a770a0d2b5193f81b54483bb954fb29ef8d7"}}
+         :git/sha "a332a770a0d2b5193f81b54483bb954fb29ef8d7"}
+        ;; デジタル庁デザインシステム (DADS) -- this workspace's base design
+        ;; system. Used only by `steam.render-html` to style the build-time
+        ;; operator console; the actor itself has no UI dependency.
+        io.github.kotoba-lang/jp-go-digital-design-system
+        {:git/url "https://github.com/kotoba-lang/jp-go-digital-design-system"
+         :git/sha "83db99546eabc53613ae826ea41d1533a3c574af"}}
  :aliases
  {;; monorepo workspace dev -- pin both to local checkout
   :dev-local {:override-deps
@@ -16,6 +22,11 @@
   :dev {}
   ;; clojure -M:dev:run  -> drive the demo through one OperationActor
   :run {:main-opts ["-m" "steam.sim"]}
+  ;; clojure -M:dev:render-html [out-file] -> regenerate
+  ;; docs/samples/operator-console.html from the REAL actor stack
+  ;; (flagship checklist item 2). Refuses to write a page whose ledger
+  ;; contains no governor hold.
+  :render-html {:main-opts ["-m" "steam.render-html"]}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}

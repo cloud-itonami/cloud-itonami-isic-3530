@@ -32,7 +32,7 @@
   either an append-only vector or explicitly sorted. Two consecutive
   runs are byte-identical.
 
-  Usage: `clojure -M:dev:render-html [out-file]`
+  Usage: `kbb -M:dev:render-html [out-file]`
   (default `docs/samples/operator-console.html`)."
   (:require [clojure.java.io :as io]
             [kotoba.lang.text :as str]
@@ -395,7 +395,7 @@
 
      (card "This run"
            (str "Build-time snapshot generated from the real actor by "
-                "<code>steam.render-html</code> (<code>clojure -M:dev:render-html</code>). "
+                "<code>steam.render-html</code> (<code>kbb -M:dev:render-html</code>). "
                 "Every value below is output of the compiled "
                 "<code>steam.operation</code> StateGraph running against the "
                 "<code>steam.store/demo-data</code> seed &mdash; no hand-written figures, no timestamps, "

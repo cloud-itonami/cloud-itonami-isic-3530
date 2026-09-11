@@ -15,8 +15,8 @@
 ```bash
 git clone https://github.com/cloud-itonami/cloud-itonami-isic-3530.git
 cd cloud-itonami-isic-3530
-clj -M:dev:run  # Test the demo
-clj -M:test    # Run the test suite
+kbb -M:dev:run  # Test the demo
+kbb -M:test    # Run the test suite
 ```
 
 ### 2. Customize for Your Jurisdiction

@@ -29,8 +29,8 @@ We welcome contributions to this thermal supply actor blueprint. Please follow t
 2. Create a feature branch
 3. Make your changes following existing code style
 4. Write tests for new functionality
-5. Ensure all tests pass (`clj -M:test`)
-6. Ensure linting passes (`clj -M:lint`)
+5. Ensure all tests pass (`kbb -M:test`)
+6. Ensure linting passes (`kbb -M:lint`)
 7. Submit a pull request with a clear description
 
 ## Code Style

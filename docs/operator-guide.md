@@ -21,7 +21,7 @@ clj -M:test    # Run the test suite
 
 ### 2. Customize for Your Jurisdiction
 
-Edit `src/steam/facts.cljc` to add your jurisdiction:
+Edit `src/steam/facts.cljk` to add your jurisdiction:
 
 ```clojure
 :YOUR-COUNTRY-CODE

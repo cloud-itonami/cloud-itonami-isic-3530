@@ -1,5 +1,5 @@
 (ns steam.store-contract-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [steam.store :as store]
             [steam.registry :as registry]))
 

@@ -1,5 +1,5 @@
 (ns steam.governor-contract-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [steam.store :as store]
             [steam.advisor :as advisor]
             [steam.governor :as governor]

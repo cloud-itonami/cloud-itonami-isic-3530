@@ -1,5 +1,5 @@
 (ns steam.facts-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [steam.facts :as facts]))
 
 (deftest ^{:doc "Verify jurisdiction catalog has expected structure."} jurisdiction-coverage

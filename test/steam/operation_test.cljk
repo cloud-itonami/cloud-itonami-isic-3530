@@ -1,5 +1,5 @@
 (ns steam.operation-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [kotoba.test :refer [deftest testing is]]
             [langgraph.graph :as g]
             [steam.operation :as operation]
             [steam.store :as store]))

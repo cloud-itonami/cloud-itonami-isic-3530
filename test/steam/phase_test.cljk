@@ -1,5 +1,5 @@
 (ns steam.phase-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [steam.phase :as phase]))
 
 (deftest ^{:doc "Test phase lookup by number."} phase-by-number

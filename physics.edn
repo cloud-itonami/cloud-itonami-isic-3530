@@ -1,0 +1,45 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README: a community thermal-supply actor for steam and chilled-water
+;; distribution -- customer intake and meter verification, supply
+;; provisioning, supply suspension/disconnection (life-support gates) --
+;; dispatching gated robot actions (the README itself models no fluid
+;; mechanics). The physical work a service robot does for it: fitting a
+;; customer's heat/energy-meter spool piece, the chilled-water service branch
+;; that meter sits on, and the insulated steam line's outer surface
+;; temperature that a robot (and a person) may touch.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-3530"
+ :cases
+ [{:id :fit-energy-meter-spool
+   :kind :manipulator
+   :procedure "service robot lifts a flanged ultrasonic energy-meter spool piece off its carrier and offers it into the gap in the customer's service branch"
+   :params {:l1-m 0.70 :l2-m 0.60 :m1-kg 12.0 :m2-kg 8.0
+            :from [0.70 -0.20] :to [0.60 0.40] :duration-s 3.0 :steps 500}
+   :sweep {:param :payload-kg :values [5.0 10.0 15.0 22.0 30.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 350.0 :basis "estimate: continuous shoulder torque of a ~25 kg-payload industrial arm class"}
+   :boundary {:lo 1.0 :hi 100.0}}
+  {:id :chilled-water-service-branch
+   :kind :pipe-flow
+   :procedure "chilled water (6 C) flows through a customer building's DN100 service branch (80 m supply + return equivalent length) at the building's cooling demand"
+   :params {:diameter-m 0.1023 :length-m 80.0 :roughness-m 4.5e-5
+            :density-kg-m3 1000.0 :viscosity-pa-s 1.47e-3 :pump-efficiency 0.70 :elevation-m 0.0}
+   :sweep {:param :q-m3s :values [0.005 0.010 0.015 0.020 0.030]}
+   :quantity :pressure-drop-pa
+   :limit {:max 60000.0 :basis "estimate: the share of the network's differential pressure available across one customer branch"}
+   :boundary {:lo 0.001 :hi 0.06}}
+  {:id :steam-line-jacket-temperature
+   :kind :thermal
+   :procedure "180 C steam line's mineral-wool insulation settles to its steady outer-jacket temperature in 25 C still air (flat-slab approximation of the lagging)"
+   :params {:conductivity-w-mk 0.045 :density-kg-m3 100.0 :specific-heat-j-kgk 840.0
+            :t0-c 25.0 :t-hot-c 180.0 :front-fixed? true :t-back-ambient-c 25.0 :h-back-w-m2k 8.0
+            :threshold-c 50.0 :duration-s 86400.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.010 0.020 0.030 0.050 0.080]}
+   :quantity :final-back-c
+   :limit {:max 50.0 :basis "estimate: a 50 C touchable-surface target for lagging in walkways a robot or a person can reach"}
+   :boundary {:lo 0.005 :hi 0.12}}]}
